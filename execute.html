@@ -45,9 +45,13 @@
     <div class="container">
         <h1>Execution Status</h1>
         
-        <pre><code id="gemini-message">```message-for-gemini
-Hello Gemini - please wait for your message, you can ping here until the content you need is available
-```</code></pre>
+        <div id="loading">
+            <p>⏳ Waiting for webhook response...</p>
+        </div>
+        
+        <div id="content" style="display: none;">
+            <pre><code id="gemini-message"></code></pre>
+        </div>
         
         <script>
             // Get all query parameters
@@ -58,6 +62,8 @@ Hello Gemini - please wait for your message, you can ping here until the content
             
             // Function to fetch and display Make.com response
             async function fetchMakeResponse() {
+                const loadingDiv = document.getElementById('loading');
+                const contentDiv = document.getElementById('content');
                 const geminiMessageDiv = document.getElementById('gemini-message');
                 
                 try {
@@ -74,10 +80,14 @@ Hello Gemini - please wait for your message, you can ping here until the content
                             cleanResponse = responseText;
                         }
                         
-                        // Update the message block with webhook response
+                        // Hide loading, show content with webhook response
+                        loadingDiv.style.display = 'none';
+                        contentDiv.style.display = 'block';
                         geminiMessageDiv.textContent = `\`\`\`message-for-gemini\n${cleanResponse}\n\`\`\``;
                     } else {
-                        // Show error response
+                        // Hide loading, show error response
+                        loadingDiv.style.display = 'none';
+                        contentDiv.style.display = 'block';
                         geminiMessageDiv.textContent = `\`\`\`message-for-gemini\nError ${response.status}: ${responseText}\n\`\`\``;
                     }
                 } catch (error) {
@@ -89,13 +99,15 @@ Hello Gemini - please wait for your message, you can ping here until the content
                     img.src = makeUrl;
                     document.body.appendChild(img);
                     
-                    // Show that request was sent but response may not be visible
+                    // Hide loading, show fallback message
+                    loadingDiv.style.display = 'none';
+                    contentDiv.style.display = 'block';
                     geminiMessageDiv.textContent = `\`\`\`message-for-gemini\nRequest sent to Make.com via image beacon due to CORS restrictions.\nWebhook URL: ${makeUrl}\nNote: Response processing may be happening in background.\n\`\`\``;
                 }
             }
             
-            // Execute the request after a small delay to ensure page is ready
-            setTimeout(fetchMakeResponse, 100);
+            // Execute the request immediately when page loads
+            fetchMakeResponse();
         </script>
     </div>
 </body>
