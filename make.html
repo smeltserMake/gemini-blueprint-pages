@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/make Tool - Blueprint Prompting</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .metadata {
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>/make Tool Instructions</h1>
+        <p>Execute Make.com API calls and scenarios</p>
+        
+        <pre><code>```markdown
+# /make Tool Execution Guide
+
+## URL Construction Pattern
+Base URL: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make
+Parameters: ?endpoint={endpoint}&method={method}&json={encoded_json}
+
+## Parse User Query
+Extract the following from natural language:
+- **Action verb**: run, list, get, create, delete, pause, resume
+- **Resource type**: scenario, webhook, connection, folder, datastore
+- **Resource ID**: numeric or alphanumeric identifier
+- **Additional parameters**: any extra data needed
+
+## Endpoint Mapping
+
+### Scenario Operations
+| User Says | Endpoint | Method |
+|-----------|----------|--------|
+| "run scenario {id}" | scenarios/{id}/run | POST |
+| "list scenarios" | scenarios | GET |
+| "get scenario {id}" | scenarios/{id} | GET |
+| "pause scenario {id}" | scenarios/{id}/pause | POST |
+| "resume scenario {id}" | scenarios/{id}/resume | POST |
+| "delete scenario {id}" | scenarios/{id} | DELETE |
+| "list scenario executions {id}" | scenarios/{id}/executions | GET |
+
+### Webhook Operations
+| User Says | Endpoint | Method |
+|-----------|----------|--------|
+| "list webhooks" | webhooks | GET |
+| "get webhook {id}" | webhooks/{id} | GET |
+| "create webhook" | webhooks | POST |
+| "delete webhook {id}" | webhooks/{id} | DELETE |
+| "test webhook {id}" | webhooks/{id}/test | POST |
+
+### Data Store Operations
+| User Says | Endpoint | Method |
+|-----------|----------|--------|
+| "list data stores" | datastores | GET |
+| "get records from {store}" | datastores/{store}/records | GET |
+| "add record to {store}" | datastores/{store}/records | POST |
+| "update record {id} in {store}" | datastores/{store}/records/{id} | PUT |
+| "delete record {id} from {store}" | datastores/{store}/records/{id} | DELETE |
+| "clear data store {store}" | datastores/{store}/clear | POST |
+
+### Connection Operations
+| User Says | Endpoint | Method |
+|-----------|----------|--------|
+| "list connections" | connections | GET |
+| "get connection {id}" | connections/{id} | GET |
+| "test connection {id}" | connections/{id}/test | POST |
+| "delete connection {id}" | connections/{id} | DELETE |
+
+## JSON Payload Construction
+
+For operations requiring data (POST, PUT), construct JSON based on context:
+
+### Create Webhook Example
+User: "create webhook for order processing"
+```json
+{
+  "name": "Order Processing Webhook",
+  "description": "Webhook for processing incoming orders",
+  "enabled": true
+}
+```
+
+### Add Data Store Record Example
+User: "add user John Doe with email john@example.com to users store"
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com"
+}
+```
+
+## Complete URL Examples
+
+1. **Run Scenario 123456**
+   - Parse: action=run, resource=scenario, id=123456
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=scenarios/123456/run&method=POST`
+
+2. **List All Webhooks**
+   - Parse: action=list, resource=webhooks
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=webhooks&method=GET`
+
+3. **Add Record to Users Store**
+   - Parse: action=add, resource=record, store=users
+   - JSON: `{"name":"John","email":"john@example.com"}`
+   - Encoded: `%7B%22name%22%3A%22John%22%2C%22email%22%3A%22john%40example.com%22%7D`
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=datastores/users/records&method=POST&json=%7B%22name%22%3A%22John%22%2C%22email%22%3A%22john%40example.com%22%7D`
+
+## Response Validation
+After constructing URL, browse to it and query for:
+1. **"Status"** - to confirm execution (✅ or ❌)
+2. **"executionId"** - for scenario runs
+3. **"error"** - if something failed
+4. **"data"** - for GET operations returning data
+
+## Error Handling
+If user request doesn't match patterns:
+1. Try to infer closest matching operation
+2. If ambiguous, use most common interpretation
+3. Always execute without asking for clarification
+```</code></pre>
+        
+        <div class="metadata">
+            <p>Tool: /make</p>
+            <p>Version: 2.0</p>
+            <p>Type: API Integration</p>
+        </div>
+    </div>
+</body>
+</html>

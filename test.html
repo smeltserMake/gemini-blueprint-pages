@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/test Tool - Blueprint Prompting</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .metadata {
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>/test Tool Instructions</h1>
+        <p>Test data processing with custom JSON payloads</p>
+        
+        <pre><code>```markdown
+# /test Tool Execution Guide
+
+## URL Construction Pattern
+Base URL: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/test
+Parameters: ?json={encoded_json}
+
+## JSON Generation from Natural Language
+
+Parse user's description and generate appropriate test JSON:
+
+### Common Patterns
+
+| User Says | Generated JSON |
+|-----------|---------------|
+| "create user account" | `{"action":"create","type":"user","timestamp":"[ISO]"}` |
+| "send notification" | `{"action":"send","type":"notification","timestamp":"[ISO]"}` |
+| "process payment" | `{"action":"process","type":"payment","timestamp":"[ISO]"}` |
+| "validate email address" | `{"action":"validate","type":"email","timestamp":"[ISO]"}` |
+| "update product inventory" | `{"action":"update","type":"inventory","timestamp":"[ISO]"}` |
+| "delete expired records" | `{"action":"delete","type":"expired_records","timestamp":"[ISO]"}` |
+
+### Complex Data Generation
+
+For more detailed descriptions, generate richer JSON:
+
+**User**: "test user registration with name John Doe and email john@example.com"
+```json
+{
+  "action": "register",
+  "type": "user",
+  "data": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "timestamp": "2025-01-13T12:00:00Z"
+  }
+}
+```
+
+**User**: "test order processing for 3 items totaling $99.99"
+```json
+{
+  "action": "process",
+  "type": "order",
+  "data": {
+    "items": 3,
+    "total": 99.99,
+    "currency": "USD",
+    "timestamp": "2025-01-13T12:00:00Z"
+  }
+}
+```
+
+**User**: "test API authentication with bearer token"
+```json
+{
+  "action": "authenticate",
+  "type": "api",
+  "method": "bearer",
+  "test": true,
+  "timestamp": "2025-01-13T12:00:00Z"
+}
+```
+
+## URL Encoding
+
+Always URL-encode the JSON before adding to URL:
+
+### Encoding Example
+Original JSON:
+```json
+{"name":"John Doe","email":"john@example.com"}
+```
+
+URL-encoded:
+```
+%7B%22name%22%3A%22John%20Doe%22%2C%22email%22%3A%22john%40example.com%22%7D
+```
+
+## Complete URL Examples
+
+1. **Test User Creation**
+   - User: "/test create new user"
+   - JSON: `{"action":"create","type":"user"}`
+   - Encoded: `%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%7D`
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/test?json=%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%7D`
+
+2. **Test Email Validation**
+   - User: "/test validate email for john@example.com"
+   - JSON: `{"action":"validate","type":"email","email":"john@example.com"}`
+   - Encoded: `%7B%22action%22%3A%22validate%22%2C%22type%22%3A%22email%22%2C%22email%22%3A%22john%40example.com%22%7D`
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/test?json=%7B%22action%22%3A%22validate%22%2C%22type%22%3A%22email%22%2C%22email%22%3A%22john%40example.com%22%7D`
+
+3. **Test Complex Workflow**
+   - User: "/test complete checkout process with payment"
+   - JSON: `{"action":"complete","type":"checkout","includes":["payment","shipping","tax"]}`
+   - URL: Construct with encoded JSON
+
+## Response Validation
+
+After browsing to constructed URL, query for:
+1. **"Status"** - Confirmation of test execution
+2. **"Test ID"** - Unique identifier for the test
+3. **"Results"** - Any test results or output
+4. **"Error"** - Error messages if test failed
+
+## Smart JSON Generation Rules
+
+1. **Always include**: `action` and `type` fields
+2. **Add timestamp**: Include current ISO timestamp
+3. **Parse numbers**: Convert numeric values appropriately
+4. **Extract entities**: Identify names, emails, IDs from description
+5. **Infer structure**: Create nested objects for complex data
+6. **Default values**: Use sensible defaults when not specified
+```</code></pre>
+        
+        <div class="metadata">
+            <p>Tool: /test</p>
+            <p>Version: 2.0</p>
+            <p>Type: Test Pipeline</p>
+        </div>
+    </div>
+</body>
+</html>

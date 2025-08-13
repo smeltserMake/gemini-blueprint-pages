@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>/slack Tool - Blueprint Prompting</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .metadata {
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>/slack Tool Instructions</h1>
+        <p>Send messages to Slack channels</p>
+        
+        <pre><code>```markdown
+# /slack Tool Execution Guide
+
+## URL Construction Pattern
+Base URL: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/slack
+Parameters: ?channel={channel}&text={encoded_text}&thread_ts={optional}
+
+## Parse Message Format
+
+Extract from user input:
+1. **Message text**: Everything before "to" keyword
+2. **Target channel**: Everything after "to" keyword
+3. **Optional thread**: If user mentions "in thread" or provides thread timestamp
+
+### Parsing Examples
+
+| User Input | Message | Channel |
+|------------|---------|---------|
+| "Hello team to #general" | "Hello team" | "general" |
+| "Deploy complete! to #devops" | "Deploy complete!" | "devops" |
+| "Meeting at 3pm to @john" | "Meeting at 3pm" | "@john" |
+| "Status update to dev-team" | "Status update" | "dev-team" |
+
+## Channel Format Rules
+
+1. **Remove # prefix**: `#general` → `general`
+2. **Keep @ for DMs**: `@username` → `@username`
+3. **Handle spaces**: Replace with hyphens or underscores
+4. **Default channel**: Use `general` if not specified
+
+## Message Formatting
+
+### Basic Text
+User: "/slack Hello everyone! to #general"
+- Message: "Hello everyone!"
+- Channel: "general"
+- URL: `...?channel=general&text=Hello%20everyone!`
+
+### With Mentions
+User: "/slack @channel deployment starting to #devops"
+- Message: "@channel deployment starting"
+- Channel: "devops"
+- Preserve @channel and @here mentions in text
+
+### With Emojis
+User: "/slack Great job! 🎉 to #celebrations"
+- Message: "Great job! 🎉"
+- Channel: "celebrations"
+- URL-encode emoji: `Great%20job!%20%F0%9F%8E%89`
+
+### Multi-line Messages
+User: "/slack Project update:\n- Task 1 done\n- Task 2 in progress to #updates"
+- Preserve line breaks as %0A in encoding
+- Message: "Project update:%0A- Task 1 done%0A- Task 2 in progress"
+
+## Advanced Features
+
+### Thread Replies
+User: "/slack This is a reply to #general in thread 1234567890.123456"
+- Add parameter: `&thread_ts=1234567890.123456`
+
+### Scheduled Messages
+User: "/slack Reminder: Meeting tomorrow to #general at 9am"
+- Add parameter: `&schedule_time=[unix_timestamp]`
+
+### Message Formatting
+Support Slack's mrkdwn format:
+- **Bold**: `*text*` → `*text*`
+- **Italic**: `_text_` → `_text_`
+- **Code**: `` `code` `` → `` `code` ``
+- **Links**: `<URL|text>` → `<URL|text>`
+
+## Complete URL Examples
+
+1. **Simple Message**
+   - User: "/slack Hello world to #general"
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/slack?channel=general&text=Hello%20world`
+
+2. **Direct Message**
+   - User: "/slack Can we meet at 3pm? to @sarah"
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/slack?channel=%40sarah&text=Can%20we%20meet%20at%203pm%3F`
+
+3. **Complex Message with Formatting**
+   - User: "/slack *Deploy complete!* ✅\nVersion: 2.0.1 to #releases"
+   - URL: `https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/slack?channel=releases&text=*Deploy%20complete!*%20%E2%9C%85%0AVersion%3A%202.0.1`
+
+## Response Validation
+
+After browsing to constructed URL, query for:
+1. **"Status"** - Confirmation message was sent
+2. **"message_ts"** - Timestamp of sent message
+3. **"channel"** - Confirmation of target channel
+4. **"error"** - Error details if sending failed
+
+## Error Handling
+
+Common issues and solutions:
+- **Channel not found**: Remove # and retry
+- **No permission**: Check if it's a private channel
+- **Message too long**: Truncate to 4000 characters
+- **Invalid characters**: Ensure proper URL encoding
+```</code></pre>
+        
+        <div class="metadata">
+            <p>Tool: /slack</p>
+            <p>Version: 2.0</p>
+            <p>Type: Messaging Integration</p>
+        </div>
+    </div>
+</body>
+</html>
