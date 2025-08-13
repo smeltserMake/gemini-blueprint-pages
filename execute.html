@@ -45,25 +45,24 @@
     <div class="container">
         <h1>Execution Status</h1>
         
-        <div class="status">
-            <p><strong>Status:</strong> ✅ success</p>
-            <p><strong>Message:</strong> Request sent to Make.com</p>
+        <div class="status" id="status">
+            <p><strong>Status:</strong> 🔄 Executing...</p>
+            <p><strong>Message:</strong> Sending request to Make.com</p>
         </div>
         
         <pre><code>```markdown
-# Execution Details
+# Execution Results
 
-## Status: success ✅
-
-The following request has been sent to Make.com:
-
-### Parameters Received:
+## Parameters Sent:
 ```</code></pre>
         
         <div id="params"></div>
         
-        <!-- This invisible image triggers Make.com webhook with all query params -->
-        <img id="trigger" width="1" height="1" style="display:none" alt="">
+        <pre><code>```json
+<!-- Make.com Response will appear here -->
+```</code></pre>
+        
+        <div id="response"></div>
         
         <script>
             // Get all query parameters
@@ -73,7 +72,7 @@ The following request has been sent to Make.com:
             const paramsDiv = document.getElementById('params');
             let paramsList = '<pre><code>';
             for (const [key, value] of params) {
-                paramsList += `- ${key}: ${value}\n`;
+                paramsList += `- ${key}: ${decodeURIComponent(value).substring(0, 100)}${value.length > 100 ? '...' : ''}\n`;
             }
             paramsList += '</code></pre>';
             paramsDiv.innerHTML = paramsList;
@@ -81,11 +80,72 @@ The following request has been sent to Make.com:
             // Construct Make.com webhook URL with all parameters
             const makeUrl = 'https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?' + params.toString();
             
-            // Set the image source to trigger the webhook
-            document.getElementById('trigger').src = makeUrl;
+            // Function to fetch and display Make.com response
+            async function fetchMakeResponse() {
+                try {
+                    const response = await fetch(makeUrl);
+                    const responseText = await response.text();
+                    
+                    // Update status
+                    const statusDiv = document.getElementById('status');
+                    const responseDiv = document.getElementById('response');
+                    
+                    if (response.ok) {
+                        statusDiv.innerHTML = `
+                            <p><strong>Status:</strong> ✅ Success</p>
+                            <p><strong>Response Code:</strong> ${response.status}</p>
+                            <p><strong>Content Type:</strong> ${response.headers.get('content-type') || 'unknown'}</p>
+                        `;
+                        
+                        // Try to parse as JSON, fall back to text
+                        let displayContent;
+                        try {
+                            const jsonResponse = JSON.parse(responseText);
+                            displayContent = JSON.stringify(jsonResponse, null, 2);
+                        } catch {
+                            displayContent = responseText;
+                        }
+                        
+                        responseDiv.innerHTML = `<pre><code>${displayContent}</code></pre>`;
+                    } else {
+                        statusDiv.innerHTML = `
+                            <p><strong>Status:</strong> ❌ Error</p>
+                            <p><strong>Response Code:</strong> ${response.status}</p>
+                            <p><strong>Error:</strong> ${response.statusText}</p>
+                        `;
+                        responseDiv.innerHTML = `<pre><code>${responseText}</code></pre>`;
+                    }
+                } catch (error) {
+                    // Handle CORS or network errors
+                    const statusDiv = document.getElementById('status');
+                    const responseDiv = document.getElementById('response');
+                    
+                    statusDiv.innerHTML = `
+                        <p><strong>Status:</strong> ❌ Network Error</p>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Note:</strong> CORS may prevent direct response display</p>
+                    `;
+                    
+                    // Fallback: Still trigger via image and show what we tried
+                    const img = document.createElement('img');
+                    img.width = 1;
+                    img.height = 1;
+                    img.style.display = 'none';
+                    img.src = makeUrl;
+                    document.body.appendChild(img);
+                    
+                    responseDiv.innerHTML = `
+                        <pre><code>Request sent via image beacon to:
+${makeUrl}
+
+Note: Response may not be visible due to CORS restrictions,
+but Make.com will receive and process the request.</code></pre>
+                    `;
+                }
+            }
             
-            // Also add the URL to the page for transparency
-            document.querySelector('.status').innerHTML += `<p><strong>Webhook URL:</strong> <code>${makeUrl}</code></p>`;
+            // Execute the request
+            fetchMakeResponse();
         </script>
     </div>
 </body>
