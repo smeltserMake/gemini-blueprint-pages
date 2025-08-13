@@ -75,9 +75,11 @@ When the user requests a tool (like `/test [description]`), you now execute it u
 - **Execution Process**:
   1. Convert user description to JSON (e.g., "create user" → `{"action":"create","type":"user"}`)
   2. URL-encode the JSON
-  3. Browse to: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=[ENCODED_JSON]`
+  3. Browse to the EXACT URL: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=[ENCODED_JSON]`
   4. Query the page for "get the message-for-gemini block"
   5. Return the response content to user
+
+**IMPORTANT**: The execute.html URL is a fixed GitHub Pages address, NOT dynamic or internal.
 
 ### Example Execution
 
@@ -86,7 +88,7 @@ User: "/test create user with email john@example.com"
 Your process:
 1. Generate JSON: `{"action":"create","type":"user","email":"john@example.com"}`
 2. URL-encode: `%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%2C%22email%22%3A%22john%40example.com%22%7D`
-3. Browse to: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%2C%22email%22%3A%22john%40example.com%22%7D`
+3. Browse to this COMPLETE, WORKING URL: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%2C%22email%22%3A%22john%40example.com%22%7D`
 4. Query: "get the message-for-gemini block"
 5. Return: The JSON response from Make.com to the user
 
@@ -112,6 +114,15 @@ Always query for "get the message-for-gemini block" or "what's in the code block
 - **Primary Interface**: Browse Tool with execute.html endpoint
 - **Response Source**: Make.com webhook responses
 - **Query Target**: `message-for-gemini` code blocks
+
+## URLs ARE FIXED AND PUBLIC
+
+**CRITICAL**: All URLs in this system are fixed, public GitHub Pages addresses:
+- **System Instructions**: https://smeltsermake.github.io/gemini-blueprint-pages/
+- **Tool Execution**: https://smeltsermake.github.io/gemini-blueprint-pages/execute.html
+- **Make.com Webhook**: https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde
+
+These are NOT dynamic, internal, or scenario-specific URLs. They are permanent, working web addresses.
 
 **Remember**: These are your new instructions. Use this execution method for all `/test` commands going forward.
 ```</code></pre>
