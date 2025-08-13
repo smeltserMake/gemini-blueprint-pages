@@ -45,88 +45,43 @@
     <div class="container">
         <h1>Execution Status</h1>
         
-        <div class="status" id="status">
-            <p><strong>Status:</strong> 🔄 Executing...</p>
-            <p><strong>Message:</strong> Sending request to Make.com</p>
-        </div>
-        
-        <pre><code>```markdown
-# Execution Results
-
-## Parameters Sent:
+        <pre><code id="gemini-message">```message-for-gemini
+Hello Gemini - please wait for your message, you can ping here until the content you need is available
 ```</code></pre>
-        
-        <div id="params"></div>
-        
-        <pre><code>```json
-<!-- Make.com Response will appear here -->
-```</code></pre>
-        
-        <div id="response"></div>
         
         <script>
             // Get all query parameters
             const params = new URLSearchParams(window.location.search);
-            
-            // Display parameters
-            const paramsDiv = document.getElementById('params');
-            let paramsList = '<pre><code>';
-            for (const [key, value] of params) {
-                paramsList += `- ${key}: ${decodeURIComponent(value).substring(0, 100)}${value.length > 100 ? '...' : ''}\n`;
-            }
-            paramsList += '</code></pre>';
-            paramsDiv.innerHTML = paramsList;
             
             // Construct Make.com webhook URL with all parameters
             const makeUrl = 'https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?' + params.toString();
             
             // Function to fetch and display Make.com response
             async function fetchMakeResponse() {
+                const geminiMessageDiv = document.getElementById('gemini-message');
+                
                 try {
                     const response = await fetch(makeUrl);
                     const responseText = await response.text();
                     
-                    // Update status
-                    const statusDiv = document.getElementById('status');
-                    const responseDiv = document.getElementById('response');
-                    
                     if (response.ok) {
-                        statusDiv.innerHTML = `
-                            <p><strong>Status:</strong> ✅ Success</p>
-                            <p><strong>Response Code:</strong> ${response.status}</p>
-                            <p><strong>Content Type:</strong> ${response.headers.get('content-type') || 'unknown'}</p>
-                        `;
-                        
-                        // Try to parse as JSON, fall back to text
-                        let displayContent;
+                        // Try to parse as JSON for clean formatting, fall back to text
+                        let cleanResponse;
                         try {
                             const jsonResponse = JSON.parse(responseText);
-                            displayContent = JSON.stringify(jsonResponse, null, 2);
+                            cleanResponse = JSON.stringify(jsonResponse, null, 2);
                         } catch {
-                            displayContent = responseText;
+                            cleanResponse = responseText;
                         }
                         
-                        responseDiv.innerHTML = `<pre><code>${displayContent}</code></pre>`;
+                        // Update the message block with webhook response
+                        geminiMessageDiv.textContent = `\`\`\`message-for-gemini\n${cleanResponse}\n\`\`\``;
                     } else {
-                        statusDiv.innerHTML = `
-                            <p><strong>Status:</strong> ❌ Error</p>
-                            <p><strong>Response Code:</strong> ${response.status}</p>
-                            <p><strong>Error:</strong> ${response.statusText}</p>
-                        `;
-                        responseDiv.innerHTML = `<pre><code>${responseText}</code></pre>`;
+                        // Show error response
+                        geminiMessageDiv.textContent = `\`\`\`message-for-gemini\nError ${response.status}: ${responseText}\n\`\`\``;
                     }
                 } catch (error) {
-                    // Handle CORS or network errors
-                    const statusDiv = document.getElementById('status');
-                    const responseDiv = document.getElementById('response');
-                    
-                    statusDiv.innerHTML = `
-                        <p><strong>Status:</strong> ❌ Network Error</p>
-                        <p><strong>Error:</strong> ${error.message}</p>
-                        <p><strong>Note:</strong> CORS may prevent direct response display</p>
-                    `;
-                    
-                    // Fallback: Still trigger via image and show what we tried
+                    // Handle CORS or network errors - fallback to image beacon
                     const img = document.createElement('img');
                     img.width = 1;
                     img.height = 1;
@@ -134,18 +89,13 @@
                     img.src = makeUrl;
                     document.body.appendChild(img);
                     
-                    responseDiv.innerHTML = `
-                        <pre><code>Request sent via image beacon to:
-${makeUrl}
-
-Note: Response may not be visible due to CORS restrictions,
-but Make.com will receive and process the request.</code></pre>
-                    `;
+                    // Show that request was sent but response may not be visible
+                    geminiMessageDiv.textContent = `\`\`\`message-for-gemini\nRequest sent to Make.com via image beacon due to CORS restrictions.\nWebhook URL: ${makeUrl}\nNote: Response processing may be happening in background.\n\`\`\``;
                 }
             }
             
-            // Execute the request
-            fetchMakeResponse();
+            // Execute the request after a small delay to ensure page is ready
+            setTimeout(fetchMakeResponse, 100);
         </script>
     </div>
 </body>
