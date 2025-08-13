@@ -71,13 +71,12 @@
 ### /test - Test Data Pipeline
 - **Trigger**: `/test [description]`
 - **Description**: Test data processing with custom JSON payloads
-- **Instructions URL**: Browse to `/test.html` on this site
-- **Execution Pattern**:
-  1. Browse to `/test.html` and query "get the markdown code block"
-  2. Generate JSON based on user's description
-  3. URL-encode the JSON
-  4. Construct test URL with encoded JSON
-  5. Browse and query for "Status"
+- **Execution URL**: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json={encoded_json}`
+- **How to Execute**:
+  1. Parse user's description into JSON (e.g., "create user" → `{"action":"create","type":"user"}`)
+  2. URL-encode the JSON
+  3. Browse to: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json={encoded_json}`
+  4. Query the response for "Status" to confirm execution
 
 ### /slack - Slack Messaging
 - **Trigger**: `/slack [message] to [channel]`
@@ -108,10 +107,23 @@ All tools return HTML with status information that can be queried:
 - **Data**: Look for specific field names in the response
 - **Results**: Query for "results" or "data" to get response content
 
+## IMPORTANT: How to Execute /test Commands
+
+When user types `/test [anything]`:
+1. Convert their description to JSON
+2. URL-encode the JSON
+3. Browse to: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=[ENCODED_JSON]`
+4. The page will show "Status: ✅ success" when complete
+
+**Complete URL Pattern for /test:**
+```
+https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=[URL_ENCODED_JSON]
+```
+
 ## Execution Rules
 
 1. **Immediate Execution**: Execute slash commands without asking for confirmation
-2. **Tool Discovery**: Browse to tool-specific HTML pages for detailed instructions
+2. **Direct URL Browsing**: For /test, browse directly to the execute.html URL with parameters
 3. **Natural Language Processing**: Convert user queries to appropriate parameters
 4. **URL Encoding**: Always URL-encode JSON and text parameters
 5. **Status Checking**: Query response for "Status" to confirm execution
@@ -133,22 +145,22 @@ All tools return HTML with status information that can be queried:
 
 ## Example Workflows
 
-### Example 1: Run a Make.com Scenario
-User: "/make run scenario 123456"
-1. Browse to `/make.html` → Query "get the markdown code block"
-2. Parse: action=run, resource=scenario, id=123456
-3. Construct: `[API]/make?endpoint=scenarios/123456/run&method=POST`
-4. Browse constructed URL → Query "Status"
-5. Return: "✅ Scenario 123456 executed"
+### Example 1: Test Tool Execution
+User: "/test create user account"
+1. Parse description: "create user account"
+2. Generate JSON: `{"action":"create","type":"user"}`
+3. URL-encode JSON: `%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%7D`
+4. Construct full URL: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=%7B%22action%22%3A%22create%22%2C%22type%22%3A%22user%22%7D`
+5. Browse to that URL
+6. Query for "Status" → Returns: "✅ success"
 
-### Example 2: Send a Slack Message
-User: "/slack Hello team! to #general"
-1. Browse to `/slack.html` → Query "get the markdown code block"
-2. Parse: message="Hello team!", channel="#general"
-3. Encode message: "Hello%20team!"
-4. Construct: `[API]/slack?channel=general&text=Hello%20team!`
-5. Browse constructed URL → Query "Status"
-6. Return: "✅ Message sent to #general"
+### Example 2: Test with Custom Data
+User: "/test validate email john@example.com"
+1. Parse: action=validate, type=email, email=john@example.com
+2. Generate JSON: `{"action":"validate","type":"email","email":"john@example.com"}`
+3. URL-encode: `%7B%22action%22%3A%22validate%22%2C%22type%22%3A%22email%22%2C%22email%22%3A%22john%40example.com%22%7D`
+4. Browse to: `https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=test&json=%7B%22action%22%3A%22validate%22%2C%22type%22%3A%22email%22%2C%22email%22%3A%22john%40example.com%22%7D`
+5. Query "Status" → "✅ success"
 
 ## System Behavior
 
