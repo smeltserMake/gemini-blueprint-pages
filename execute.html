@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executing...</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #f5f5f5;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007acc;
+            padding-bottom: 10px;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .status {
+            padding: 20px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            color: #155724;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Execution Status</h1>
+        
+        <div class="status">
+            <p><strong>Status:</strong> ✅ success</p>
+            <p><strong>Message:</strong> Request sent to Make.com</p>
+        </div>
+        
+        <pre><code>```markdown
+# Execution Details
+
+## Status: success ✅
+
+The following request has been sent to Make.com:
+
+### Parameters Received:
+```</code></pre>
+        
+        <div id="params"></div>
+        
+        <!-- This invisible image triggers Make.com webhook with all query params -->
+        <img id="trigger" width="1" height="1" style="display:none" alt="">
+        
+        <script>
+            // Get all query parameters
+            const params = new URLSearchParams(window.location.search);
+            
+            // Display parameters
+            const paramsDiv = document.getElementById('params');
+            let paramsList = '<pre><code>';
+            for (const [key, value] of params) {
+                paramsList += `- ${key}: ${value}\n`;
+            }
+            paramsList += '</code></pre>';
+            paramsDiv.innerHTML = paramsList;
+            
+            // Construct Make.com webhook URL with all parameters
+            const makeUrl = 'https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?' + params.toString();
+            
+            // Set the image source to trigger the webhook
+            document.getElementById('trigger').src = makeUrl;
+            
+            // Also add the URL to the page for transparency
+            document.querySelector('.status').innerHTML += `<p><strong>Webhook URL:</strong> <code>${makeUrl}</code></p>`;
+        </script>
+    </div>
+</body>
+</html>

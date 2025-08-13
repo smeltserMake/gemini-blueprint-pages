@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Direct Make.com Solution - No Lambda!</title>
+</head>
+<body>
+    <h1>THE DEAD SIMPLE SOLUTION! 🎯</h1>
+    
+    <h2>Just use Make.com webhook URL directly!</h2>
+    
+    <pre><code>
+    <!-- Option 1: Direct link -->
+    <a href="https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?tool=make&action=run&scenario=123">
+        Execute Scenario 123
+    </a>
+    
+    <!-- Option 2: Image beacon that fires on page load -->
+    <img src="https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?tool=make&action=run&scenario=123" 
+         width="1" height="1" style="display:none" alt="">
+    
+    <!-- Option 3: JavaScript fetch (if Gemini executes JS) -->
+    <script>
+        // Parse URL params and forward to Make
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('execute')) {
+            fetch(`https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?${params.toString()}`);
+        }
+    </script>
+    </code></pre>
+    
+    <h2>The Flow:</h2>
+    <ol>
+        <li>User: "/make run scenario 123"</li>
+        <li>Gemini constructs: "https://smeltsermake.github.io/gemini-blueprint-pages/execute.html?tool=make&action=run&scenario=123"</li>
+        <li>GitHub Pages loads with query params</li>
+        <li>Page includes: <code>&lt;img src="https://hook.us1.make.com/3nzwopn5fq6ql6fulyv293728c2bxwde?tool=make&action=run&scenario=123"&gt;</code></li>
+        <li>Make.com webhook gets pinged directly with GET request!</li>
+    </ol>
+    
+    <h2>Why this is perfect:</h2>
+    <ul>
+        <li>✅ No Lambda needed at all</li>
+        <li>✅ Make.com webhooks accept GET requests</li>
+        <li>✅ Query parameters passed directly</li>
+        <li>✅ Works with simple img tag or link</li>
+        <li>✅ GitHub Pages is free</li>
+        <li>✅ No CORS issues with img tags</li>
+    </ul>
+    
+    <h2>Make.com just needs to:</h2>
+    <ol>
+        <li>Accept GET requests (already does!)</li>
+        <li>Parse query parameters</li>
+        <li>Execute based on params</li>
+        <li>Return success (even as 1x1 pixel image)</li>
+    </ol>
+</body>
+</html>

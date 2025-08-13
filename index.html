@@ -117,11 +117,19 @@ All tools return HTML with status information that can be queried:
 5. **Status Checking**: Query response for "Status" to confirm execution
 6. **Error Handling**: If error, query for "Error" or "Message" for details
 
+## Execution Method
+
+**Direct Execution via GitHub Pages:**
+- Browse to: `/execute.html?[parameters]`
+- This page automatically triggers Make.com webhook
+- Query parameters are passed directly to Make.com
+- No Lambda or API needed!
+
 ## Base URLs
 
 - **GitHub Pages Base**: This site's base URL
-- **API Endpoint**: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com
-- **Tool Pages**: Available at /{toolname}.html on this site
+- **Execution Page**: `/execute.html?[your-parameters]`
+- **Tool Instructions**: `/{toolname}.html` for detailed guides
 
 ## Example Workflows
 

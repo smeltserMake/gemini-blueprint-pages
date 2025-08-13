@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Trigger Solution</title>
+</head>
+<body>
+    <h1>Dead Simple Solution</h1>
+    
+    <h2>Option 1: Invisible Image Beacon</h2>
+    <p>When Gemini browses to execute a tool, include this in the HTML:</p>
+    <pre><code>
+    <!-- This fires a GET request to Lambda when page loads -->
+    <img src="https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=scenarios/123/run&method=POST" 
+         width="1" height="1" style="display:none" alt="">
+    </code></pre>
+    
+    <h2>Option 2: Meta Refresh Redirect</h2>
+    <p>Create tool execution pages that auto-redirect:</p>
+    <pre><code>
+    <meta http-equiv="refresh" content="0; url=https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=scenarios/123/run">
+    </code></pre>
+    
+    <h2>Option 3: GitHub Pages as URL Constructor</h2>
+    <p>The SIMPLEST approach - GitHub Pages just tells Gemini the exact URL to browse to!</p>
+    <pre><code>
+    Page content:
+    "To execute this, browse to: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?[constructed-params]"
+    </code></pre>
+
+    <h2>The Real Dead Simple Answer:</h2>
+    <p><strong>GitHub Pages doesn't need to trigger anything!</strong></p>
+    <p>It just needs to tell Gemini: "Here's the URL to browse to for execution"</p>
+    <p>Then Gemini browses directly to your Lambda URL, which triggers Make.com</p>
+    
+    <h2>Example Flow:</h2>
+    <ol>
+        <li>User: "/make run scenario 123"</li>
+        <li>Gemini browses to GitHub Pages /make.html</li>
+        <li>GitHub Pages says: "Browse to: https://3vrvux2fh1.execute-api.us-east-1.amazonaws.com/make?endpoint=scenarios/123/run&method=POST"</li>
+        <li>Gemini browses to that URL</li>
+        <li>Lambda receives GET → forwards POST to Make.com</li>
+        <li>Done!</li>
+    </ol>
+</body>
+</html>
